@@ -6,161 +6,265 @@
  * Examples at http://lab.veno.it/venobox/
  * License: MIT License
  * License URI: https://github.com/gdmartinez93/gPageJS/blob/master/LICENSE
- * Copyright 2015-2016 Gabriel David Martinez - @nicolafranchini
+ * Copyright 2015-2016 Gabriel David Martinez - gdmartinez.sandino@gmail.com
  *
  */
 (function($){
-  $.fn.extend({
-    //plugin name - venobox
-    gPages: function(options) {
-      var loaders = {
-          gear: 'gear.svg',
-          spin: 'spin.svg',
-          ellipsis: 'ellipsis.svg',
-          ring: 'ring.svg'
-      };
+    var obj,
+        gOptions;
 
-      if( options.loader ){
-          if( loaders[options.loader] ){
-              options.loader = '../assets/'+ loaders[options.loader];
-          }
-      }
+    $.fn.extend({
+        gPages: function(options, action) {
+            // default options
+            if( action == undefined ){
+              var defaults = {
+                  item: '',
+                  itemPerPage: 10,
+                  prevText: 'back',
+                  nextText: 'next',
+                  loader: 'ring'
+              };
 
-      // default options
-      var defaults = {
-          item: '',
-          itemPerPage: 10,
-          prevText: 'back',
-          nextText: 'next',
-          loader: '../assets/ring.svg'
-      };
+              options = $.extend(defaults, options);
+              gOptions = options;
 
-      var options = $.extend(defaults, options);
+              return this.each(function() {
+                  if( $(this).hasClass('gPages') ) { return; }
 
-      return this.each(function() {
-        var obj = $(this),
-            $paginator;
+                  obj = $(this);
+                  obj.addClass('gPages');
 
-        obj.addClass('gPages');
-        createPaginator( obj, options );
+                  createPaginator( obj, options );
 
-        var $paginator = obj.find('.gPaginator'),
-            totalItems = obj.find(options.item).length,
-            totalPages = Math.ceil( totalItems / options.itemPerPage ),
-            $items = obj.find(options.item),
-            $itemsForInclude = $items;
+                  var $paginator = obj.find('.gPaginator'),
+                      totalItems = obj.find(options.item).length,
+                      totalPages = Math.ceil( totalItems / options.itemPerPage ),
+                      $items = obj.find(options.item),
+                      $itemsForInclude = $items;
 
-        // Create pages and append items
-        for( var i = 0; i < totalPages; i++ ){
-          $( '<div class="gPage"></div>' ).insertBefore( $paginator );
+                  // Create pages and append items
+                  for( var i = 0; i < totalPages; i++ ){
+                      $( '<div class="gPage"></div>' ).insertBefore( $paginator );
 
-          if( i + 1 == totalPages ){
-              obj.find('.gPage').last().append( $itemsForInclude );
-          }
-          else{
-              var startPoint = 0;
-              var endPoint = options.itemPerPage;
+                      if( i + 1 == totalPages ){
+                          obj.find('.gPage').last().append( $itemsForInclude );
+                      }
+                      else{
+                          var startPoint = 0;
+                          var endPoint = options.itemPerPage;
 
-              var itemsToInclude = $itemsForInclude.splice(startPoint, endPoint);
+                          var itemsToInclude = $itemsForInclude.splice(startPoint, endPoint);
 
-              obj.find('.gPage').last().append( itemsToInclude );
-          }
+                          obj.find('.gPage').last().append( itemsToInclude );
+                      }
 
-          $( '<li class="page"><a href="#page-'+ ( i + 1 ) +'">'+ ( i + 1 ) +'</a></li>' ).insertBefore( $paginator.children().last() );
+                      $( '<li class="page"><a href="#page-'+ ( i + 1 ) +'">'+ ( i + 1 ) +'</a></li>' ).insertBefore( $paginator.children().last() );
+                  }
+
+                  if(options.loader){
+                    createLoader();
+                  }
+
+                  if( window.location.hash ){
+                      var pageActive = Number( window.location.hash.split('page-')[1] );
+
+                      obj.find('.gPage')
+                          .eq( pageActive - 1 )
+                          .addClass('active');
+
+                      $paginator
+                          .children( '.page' )
+                          .removeClass( 'active' )
+                          .eq( pageActive - 1 )
+                          .addClass( 'active' );
+
+                      if( pageActive == 1 ){
+                          $paginator.find('.page_prev').addClass('disabled');
+                      }
+                      else if( pageActive == totalPages ){
+                          $paginator.find('.page_next').addClass('disabled');
+                      }
+                  }
+                  else{
+                      obj.find('.gPage')
+                          .removeClass('active')
+                          .first().addClass('active');
+
+                      $paginator
+                          .children( '.page' )
+                          .removeClass('active')
+                          .first().addClass('active');
+
+                      $paginator.find('.page_prev').addClass('disabled');
+                  }
+
+                  $paginator.children(':not(".page")').on('click', function( event ){
+                      if( $(this).hasClass('disabled') ) { return false; }
+
+                      event.preventDefault();
+                      event.stopPropagation();
+
+                      var pageActive = $paginator.find('.page.active');
+
+                      if( $(this).hasClass('page_prev') ){
+                          if( pageActive.prev().hasClass('page') ){
+                              changePage( null, pageActive.prev() );
+                          }
+                          else{
+                              return false;
+                          }
+                      }
+                      else{
+                          if( pageActive.next().hasClass('page') ){
+                              changePage( null, pageActive.next() );
+                          }
+                          else{
+                              return false;
+                          }
+                      }
+                  });
+
+                  $paginator.children('.page').on('click', changePage);
+
+                  /*$paginator.children('.page').on('click', function( event ){
+                      //event.preventDefault();
+                      //event.stopPropagation();
+
+                      if( $(this).hasClass('active') ) { return; }
+
+                      $(this)
+                          .addClass('active')
+                          .siblings().removeClass('active');
+
+                      obj.find('.gPage')
+                          .removeClass('active')
+                          .eq( $(this).index() -1 )
+                          .addClass('active');
+                  });*/
+              });
+            }
+            else{
+
+            }
         }
+    });
 
-        if( window.location.hash ){
-            var pageActive = Number( window.location.hash.split('page-')[1] );
+    /* -------- CREATE PAGINATOR -------- */
+    function createPaginator( elem, options ){
+        elem.append($('<ul class="gPaginator"></ul>'));
+        var $paginator = elem.find('.gPaginator');
+        $paginator.append('<li class="page_prev"><a href="#">'+ options.prevText +'</a></li>');
+        $paginator.append('<li class="page_next"><a href="#">'+ options.nextText +'</a></li>');
+        return $paginator;
+    }
 
-            obj.find('.gPage')
-                .eq( pageActive - 1 )
-                .addClass('active');
+    /* -------- CREATE LOADER -------- */
+    function createLoader(){
+      $('<div class="gPages__loader"></div>').insertBefore( obj.children().first() );
+      var $loader = obj.find('.gPages__loader');
 
-            $paginator
-                .children( '.page' )
-                .removeClass( 'active' )
-                .eq( pageActive - 1 )
-                .addClass( 'active' );
+      if( gOptions.loader == 'circle' ){
+          $loader.append('<span class="circle loader_default">' +
+                              '<span class="left">' +
+                                  '<span class="anim"></span>' +
+                              '</span>' +
+                              '<span class="right">' +
+                                  '<span class="anim"></span>' +
+                              '</span>' +
+                          '</span>');
+      }
+      else if( gOptions.loader == 'round' ){
+          $loader.append('<span class="round loader_default">' +
+                              '<span class="left">' +
+                                  '<span class="anim"></span>' +
+                              '</span>' +
+                              '<span class="right">' +
+                                  '<span class="anim"></span>' +
+                              '</span>' +
+                          '</span>');
+      }
+      else if( gOptions.loader == 'balls' ){
+          $loader.append('<div class="balls"></div>');
+      }
+      else if( gOptions.loader == 'dots' ){
+          $loader.append('<div class="dots">' +
+                              '<div class="dots__dot dot_1"></div>' +
+                              '<div class="dots__dot dot_2"></div>' +
+                              '<div class="dots__dot dot_3"></div>' +
+                              '<div class="dots__dot dot_4"></div>' +
+                          '</div>');
+      }
+      else if( gOptions.loader == 'rspin' ){
+          $loader.append('<div class="rspin">' +
+                              '<span class="rspin__indicator"></span>' +
+                              '<span class="rspin__spinner">' +
+                                  '<span class="elem"></span>' +
+                              '</span> ' +
+                              '<span class="rspin__bar bar_1"></span>' +
+                              '<span class="rspin__bar bar_2"></span>' +
+                              '<span class="rspin__bar bar_3"></span>' +
+                              '<span class="rspin__bar bar_4"></span>' +
+                          '</div>');
+      }
+      else if( gOptions.loader == 'metro_spin' ){
+          $loader.append('<div class="metro_spin">' +
+                              '<div class="metro_spin__circle"></div>' +
+                              '<div class="metro_spin__circle"></div>' +
+                              '<div class="metro_spin__circle"></div>' +
+                              '<div class="metro_spin__circle"></div>' +
+                              '<div class="metro_spin__circle"></div>' +
+                          '</div>');
+      }
+    }
 
-            if( pageActive == 1 ){
-                $paginator.find('.page_prev').addClass('disabled');
-            }
-            else if( pageActive == totalPages ){
-                $paginator.find('.page_next').addClass('disabled');
-            }
+    /* -------- CONTROLLER PAGES -------- */
+    function changePage( event, el ){
+        var elem;
+
+        if( el != undefined ){
+            elem = el;
         }
         else{
-            obj.find('.gPage')
-                .removeClass('active')
-                .first().addClass('active');
-
-            $paginator
-                .children( '.page' )
-                .removeClass('active')
-                .first().addClass('active');
-
-            $paginator.find('page_prev').addClass('disabled');
-        }
-
-        $paginator.children(':not(".page")').on('click', function( event ){
-            if( $(this).hasClass('disabled') ) { return; }
-
             event.preventDefault();
             event.stopPropagation();
 
-            var pageActive = $paginator.find('.page.active');
+            elem = $(this);
+        }
 
-            if( $(this).hasClass('page_prev') ){
-                if( pageActive.prev().hasClass('page') ){
-                    pageActive.prev().click();
-                    $paginator.find('.page_next').removeClass('disabled');
+        if( elem.hasClass('active') ) { return; }
 
-                    if( !$paginator.find('.page.active').prev().hasClass('page') ){
-                        $(this).addClass('disabled');
-                    }
-                }
-            }
-            else{
-                if( pageActive.next().hasClass('page') ){
-                    pageActive.next().click();
-                    $paginator.find('.page_prev').removeClass('disabled');
+        elem
+            .addClass('active')
+            .siblings().removeClass('active');
 
-                    if( !$paginator.find('.page.active').next().hasClass('page') ){
-                        $(this).addClass('disabled');
-                    }
-                }
-            }
-        });
+        obj.find('.gPage')
+            .removeClass('active')
+            .eq( elem.index() -1 )
+            .addClass('active');
 
-        $paginator.children('.page').on('click', function( event ){
-            //event.preventDefault();
-            //event.stopPropagation();
+        var $pageActive = obj.find('.gPage.active'),
+            $indicator = obj.find('.gPaginator .gPage').eq( $pageActive.index() );
 
-            if( $(this).hasClass('active') ) { return; }
+        $indicator
+            .addClass('active')
+            .siblings('.gPage').removeClass('active');
 
-            $(this)
-                .addClass('active')
-                .siblings().removeClass('active');
+        var $indicatorActive = obj.find('.gPaginator .active');
 
-            obj.find('.gPage')
-                .removeClass('active')
-                .eq( $(this).index() -1 )
-                .addClass('active');
-        });
-      });
+        if( $indicatorActive.next().hasClass('page_next') ){
+            obj.find('.gPaginator .page_next').addClass('disabled');
+            obj.find('.gPaginator .page_prev').removeClass('disabled');
+        }
+        else if( $indicatorActive.prev().hasClass('page_prev') ){
+            obj.find('.gPaginator .page_prev').addClass('disabled');
+            obj.find('.gPaginator .page_next').removeClass('disabled');
+        }
+        else{
+            obj.find('.gPaginator .page_prev')
+                .add( obj.find('.gPaginator .page_next') )
+                .removeClass('disabled');
+        }
+
+        window.location.hash = elem.children().attr('href');
     }
-  });
-
-  /* -------- CREATE PAGINATOR -------- */
-  function createPaginator( elem, options ){
-    elem.append($('<ul class="gPaginator"></ul>'));
-    var $paginator = elem.find('.gPaginator');
-    $paginator.append('<li class="page_prev"><a href="#">'+ options.prevText +'</a></li>');
-    $paginator.append('<li class="page_next"><a href="#">'+ options.nextText +'</a></li>');
-    return $paginator;
-  }
-
-  function changePage(){
-
-  }
 })(jQuery);
