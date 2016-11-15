@@ -1,6 +1,6 @@
 {
   "name": "gPagesJS",
-  "version": "0.4.6",
+  "version": "1.0",
   "description": "A jQuery plugin for paginations in Javascript",
   "author": "Gabriel David Martinez",
   "main": "src/js/gPages.js",
