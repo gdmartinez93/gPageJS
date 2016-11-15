@@ -12,7 +12,7 @@ var sass = require('gulp-sass');
 var scss = require('postcss-scss');
 var precss = require('precss');
 var autoprefixer = require('autoprefixer');
-var cssnano = require('gulp-cssnano');
+var cssmin = require('gulp-cssmin');
 
 gulp.task('css', function () {
     var processors = [
@@ -23,8 +23,8 @@ gulp.task('css', function () {
     return gulp.src( basePaths.dev + 'css/gPages.scss' )
         .pipe( sass().on('error', sass.logError) )
         .pipe( postcss(processors, {syntax: scss}) )
-        .pipe( rename('gPages.min.css') )
-        .pipe( cssnano() )
+        .pipe(cssmin())
+        .pipe( rename({suffix: '.min'}) )
         .pipe( gulp.dest(basePaths.prod + 'css/') );
 });
 
