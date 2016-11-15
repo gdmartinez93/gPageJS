@@ -1,0 +1,426 @@
+.gPages{
+  position: relative;
+
+  &__loader{
+    opacity: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 200px;
+    transition: all .3s;
+
+    &:not(.active){
+      position: absolute;
+      top: 0px;
+      left: 0px;
+    }
+
+    &.active{
+      opacity: 1;
+      z-index: 100;
+    }
+
+    .ring{
+      $loader-ring-size: 240px;
+      $loader-ring-border-size: 4px;
+
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: $loader-ring-size/-2 0 0 $loader-ring-size/-2;
+      width: $loader-ring-size;
+      height: $loader-ring-size;
+
+      .ring-light{
+        width: $loader-ring-size;
+        height: $loader-ring-size;
+        border-radius: $loader-ring-size;
+        box-shadow: 0 $loader-ring-border-size 0 lighten(#0087bf, 10%) inset;
+        animation: rotate-360 2s linear infinite;
+      }
+
+      .ring-track{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: $loader-ring-size;
+        height: $loader-ring-size;
+        border-radius: $loader-ring-size;
+        box-shadow: 0 0 10px $loader-ring-border-size rgba(black, .3) inset;
+      }
+
+      @keyframes rotate-360 {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    }
+
+    .loader_default{
+      position: relative;
+      display:inline-block;
+      height: 46px;
+      width: 46px;
+      margin: 1em;
+      border-radius: 50%;
+      background: none repeat scroll 0 0 #DDDDDD;
+      overflow:hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,.1) inset, 0 0 25px rgba(0,0,255,0.075);
+
+      & > span{
+        position: absolute;
+        height: 100%;
+        width: 50%;
+        overflow: hidden;
+      }
+
+      .left  { left:0   }
+      .right { left:50% }
+
+      .anim {
+        position: absolute;
+        left: 100%; top: 0;
+        height: 100%; width: 100%;
+        border-radius: 999px;
+        background: none repeat scroll 0 0 #508EC3;
+        opacity: 0.8;
+        animation: ui-spinner-rotate-left 3s infinite;
+        transform-origin: 0 50% 0;
+      }
+
+      .left{
+        .anim{
+          border-bottom-left-radius: 0;
+          border-top-left-radius: 0;
+        }
+      }
+      .right{
+        .anim{
+          border-bottom-right-radius: 0;
+          border-top-right-radius: 0;
+          left: -100%;
+          transform-origin: 100% 50% 0;
+          animation-name: ui-spinner-rotate-right;
+          animation-delay: 0s;
+          animation-delay: 1.5s;
+        }
+      }
+
+      .left .anim {
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+      }
+      .right .anim {
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+        left: -100%;
+        transform-origin: 100% 50% 0;
+      }
+
+      &.circle{
+        &:after{
+          content: "";
+          position: absolute;
+          top: 9px; left: 9px;
+          display: block;
+          height: 28px; width: 28px;
+          background: none repeat scroll 0 0 #F2F2F2;
+          border-radius: 50%;
+          box-shadow: 0 0 10px rgba(0,0,0,.1);
+        }
+      }
+
+      &.round{
+
+      }
+
+      @keyframes ui-spinner-rotate-left{
+        0%{transform:rotate(0deg)}
+        25%{transform:rotate(0deg)}
+        50%{transform:rotate(180deg)}
+        75%{transform:rotate(180deg)}
+        100%{transform:rotate(360deg)}
+      }
+      @keyframes ui-spinner-rotate-right{
+        0%{transform:rotate(0deg)}
+        25%{transform:rotate(180deg)}
+        50%{transform:rotate(180deg)}
+        75%{transform:rotate(360deg)}
+        100%{transform:rotate(360deg)}
+      }
+    }
+
+    .balls{
+      $preloader_size: 15px;
+      $preloader_left_round: #1b436b;
+      $preloader_right_round: firebrick;
+      $preloader_time: 1.8s;
+
+      &:before, &:after{
+
+        content: "";
+        display: block;
+
+        width: $preloader_size;
+        height: $preloader_size;
+        border-radius: 50%;
+
+        position: absolute;
+        top: 50%;
+      }
+
+      &:before{
+        background-color: $preloader_left_round;
+        left: 50%;
+        animation: animation_left_round $preloader_time infinite ease-in-out;
+      }
+
+      &:after{
+        background-color: $preloader_right_round;
+        right: 50%;
+        animation: animation_right_round $preloader_time infinite ease-in-out;
+      }
+
+      @keyframes animation_left_round{
+
+        0%, 100%{
+          transform: translate3d(50%, -50%, 0);
+        }
+
+        50%{
+          transform: translate3d(-150%, -50%, 0);
+        }
+      }
+
+      @keyframes animation_right_round{
+
+        0%, 100%{
+          transform: translate3d(-50%, -50%, 0);
+        }
+
+        50%{
+          transform: translate3d(150%, -50%, 0);
+        }
+      }
+    }
+
+    .dots{
+      font-size: 20px;
+      position: relative;
+      width: 4em;
+      height: 1em;
+      margin: 100px auto;
+
+      &__dot {
+        width: 1em;
+        height: 1em;
+        border-radius: 0.5em;
+        background: #333;
+        position: absolute;
+        animation-duration: 0.5s;
+        animation-timing-function: ease;
+        animation-iteration-count: infinite;
+
+        &.dot_1, &.dot_2 { left: 0; }
+
+        &.dot_3 { left: 1.5em; }
+
+        &.dot_4 { left: 3em; }
+
+        @keyframes reveal {
+          from { transform: scale(0.001); }
+          to { transform: scale(1); }
+        }
+
+        @keyframes slide {
+          to { transform: translateX(1.5em) }
+        }
+
+        &.dot_1 {
+          animation-name: reveal;
+        }
+
+        &.dot_2, &.dot_3 {
+          animation-name: slide;
+        }
+
+        &.dot_4 {
+          animation-name: reveal;
+          animation-direction: reverse;
+        }
+      }
+    }
+
+    .rspin{
+      $loaderSize       : 75px;
+      $radThickness     : $loaderSize/10;
+      $spinSpeed        : 750ms;
+      $backgroundColor  : #eee;
+      $forgroundColor   : #ccc;
+      $masksColor       : #fff;
+      $middleCircleSize : 68%;
+
+      background-color:$backgroundColor;
+      border-radius:100%;
+      position:relative;
+      height:$loaderSize;
+      width:$loaderSize;
+      overflow:hidden;
+      animation: rspin $spinSpeed*3 infinite linear;
+
+      @keyframes rspin{
+          to { transform: rotate(-360deg); }
+      }
+
+      &__indicator{
+        position:absolute; left:18%; top:50%;
+        margin:-$middleCircleSize/2 0 0 -$middleCircleSize/2;
+        width:$middleCircleSize;
+        height:$middleCircleSize;
+        background-color:$masksColor;
+        border-radius:100%;
+        z-index:3;
+      }
+
+      &__spinner{
+        position:absolute; top:0; bottom:0; left:0; right:0;
+        animation: spin $spinSpeed infinite linear;
+
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        .elem {
+          $thisWidth : $loaderSize*0.2;
+          position:absolute; top:1%; left:50%;
+          margin:0 0 0 -$thisWidth/2;
+          height:14px;
+          width:$thisWidth;
+          border-radius:3px;
+          background:#999;
+        }
+      }
+
+      &__bar {
+        z-index:2;
+        position:absolute; left:50%; top:-1px; bottom:-1px;
+        margin-left:-($radThickness)/2;
+        background-color:$masksColor;
+        width:($radThickness);
+
+        &.bar_1 { transform:rotate(0deg); }
+        &.bar_2 { transform:rotate(45deg); }
+        &.bar_3 { transform:rotate(90deg); }
+        &.bar_4 { transform:rotate(135deg); }
+      }
+    }
+
+    .metro_spin{
+      width: 68px;
+      height: 68px;
+
+      &__circle {
+        position: absolute;
+        width: 68px;
+        height: 68px;
+        opacity: 0;
+        transform: rotate(225deg);
+        animation-iteration-count: infinite;
+        animation-name: orbit;
+        animation-duration: 5.5s;
+
+        &:after {
+          content: '';
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          border-radius: 5px;
+          background: #000;
+        }
+
+        &:nth-child(2) {  animation-delay: 240ms; }
+        &:nth-child(3) {  animation-delay: 480ms; }
+        &:nth-child(4) {  animation-delay: 720ms; }
+        &:nth-child(5) {  animation-delay: 960ms; }
+
+        @keyframes orbit {
+          0%   { transform:rotate(225deg); opacity: 1;
+            animation-timing-function: ease-out; }
+
+          7%   { transform:rotate(345deg);
+            animation-timing-function: linear; }
+
+          30%   { transform:rotate(455deg);
+            animation-timing-function: ease-in-out; }
+
+          39%   { transform:rotate(690deg);
+            animation-timing-function: linear; }
+
+          70%   { transform:rotate(815deg); opacity: 1;
+            animation-timing-function: ease-out; }
+
+          75%   { transform:rotate(945deg);
+            animation-timing-function: ease-out; }
+
+          76% { transform:rotate(945deg); opacity: 0; }
+          100% { transform:rotate(945deg); opacity: 0; }
+        }
+      }
+    }
+  }
+
+  .gPage{
+    transition: all .3s;
+    //overflow: hidden;
+
+    &:not(.active){
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      opacity: 0;
+      z-index: -5;
+    }
+  }
+
+  .gPaginator{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0px;
+
+    .page_prev,
+    .page_next,
+    .page{
+      a {
+        &:focus,
+        &:active {
+          outline: 0;
+        }
+      }
+    }
+
+    .page {
+      margin: 0px 10px;
+
+      &:first-child {
+        margin-left: 0px;
+      }
+      &:last-child {
+        margin-right: 0px;
+      }
+
+      &.active{
+        a{
+          color: white;
+        }
+      }
+    }
+
+  }
+}
