@@ -53,5 +53,3 @@ optionsPagination = {
 
 ### Table of contents
 
-[TOC]
-
