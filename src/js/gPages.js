@@ -6,6 +6,8 @@ export default class gPages
     {
         let self = this
 
+        alert('hola desde gpages')
+
         $(window).resize( ()=> {
 
         })
