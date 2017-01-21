@@ -420,7 +420,10 @@
           color: white;
         }
       }
-    }
 
+      &.page.disabled{
+        display: none
+      }
+    }
   }
 }
