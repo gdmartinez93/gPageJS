@@ -20,7 +20,7 @@ gulp.task('css', function () {
         precss
     ];
 
-    return gulp.src( basePaths.dev + 'css/gPages.scss' )
+    return gulp.src( basePaths.dev + 'css/jquery.gPages.scss' )
         .pipe( sass().on('error', sass.logError) )
         .pipe( postcss(processors, {syntax: scss}) )
         .pipe(cssmin())
@@ -31,8 +31,8 @@ gulp.task('css', function () {
 var uglify = require('gulp-uglify');
 
 gulp.task('scripts', function() {
-    return gulp.src( basePaths.dev + 'js/gPages.js' )
-        .pipe( rename('gPages.min.js') )
+    return gulp.src( basePaths.dev + 'js/jquery.gPages.js' )
+        .pipe( rename('jquery.gPages.min.js') )
         .pipe( uglify() )
         .pipe( gulp.dest(basePaths.prod + 'js/') );
 });
