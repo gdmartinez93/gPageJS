@@ -2,7 +2,7 @@ gPages JS
 ===================
 
 
-pending description
+Is a version Component building with ES6
 
 ----------
 
@@ -35,23 +35,24 @@ This is a example defiintion options configurations, for initialize gPagesJS:
 
 ```
 // options of configuration for pagination
-optionsPagination = {
-   item: '.element',
-   itemsPerPage: 5,
-   loader: 'dots',
-   prevText: '',
-   prevSrc: '/images/icons/arrow_pagination.svg',
-   nextText: '',
-   nextSrc: '/images/icons/arrow_pagination.svg',
-   pagesPrevView: itemsInPagination,
-   pagesNextView: itemsInPagination,
-   pageChange: function () {
-	   alert('Page is changed!');
-   }
-}
+let pagination = new gPages( '#element', 
+    {
+        item: '.element',
+        itemsPerPage: 5,
+        loader: 'dots',
+        prevText: '',
+        prevSrc: '/images/icons/arrow_pagination.svg',
+        nextText: '',
+        nextSrc: '/images/icons/arrow_pagination.svg',
+        pagesPrevView: itemsInPagination,
+        pagesNextView: itemsInPagination,
+        pageChange: function () {
+            alert('Page is changed!');
+        }
+    }
+);
 ```
 
 ### Table of contents
 
-[TOC]
 

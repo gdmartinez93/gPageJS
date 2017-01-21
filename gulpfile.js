@@ -28,12 +28,21 @@ gulp.task('css', function () {
         .pipe( gulp.dest(basePaths.prod + 'css/') );
 });
 
+// ES6 with Browserify with transform Babelify
+var browserify = require('browserify');
+var babelify = require('babelify');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
 var uglify = require('gulp-uglify');
 
 gulp.task('scripts', function() {
-    return gulp.src( basePaths.dev + 'js/gPages.js' )
+    return browserify({entries: basePaths.dev + 'js/gPages.js', extensions: ['.js'], debug: true})
+        .transform( babelify )
+        .bundle()
+        .pipe( source('bundle.js') )
+        .pipe( buffer() )
+        //.pipe( uglify() )
         .pipe( rename('gPages.min.js') )
-        .pipe( uglify() )
         .pipe( gulp.dest(basePaths.prod + 'js/') );
 });
 
