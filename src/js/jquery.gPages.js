@@ -18,34 +18,33 @@
         gPages: function(options) {
             if( options != undefined ){
                 if( $.isPlainObject(options) || options == 'update' ){
-                    // default options
-                    var defaults = {
-                        item: '',
-                        itemsPerPage: 10,
-                        classContainerPage: '',
-                        prevText: 'back',
-                        nextText: 'next',
-                        prevSrc: '',
-                        nextSrc: '',
-                        loader: 'ring',
-                        pagesPrevView: 5,
-                        pagesNextView: 5,
-                        pageChange: function(){}
-                    };
-                    if( options == 'update' ){
-                        options = gOptions;
-                    } else{
+                    var update = options == 'update' ? true : false;
+
+                    if( options != 'update' ){
+                        var defaults = {
+                            item: '',
+                            itemsPerPage: 10,
+                            classContainerPage: '',
+                            prevText: 'back',
+                            nextText: 'next',
+                            prevSrc: '',
+                            nextSrc: '',
+                            loader: 'ring',
+                            pagesPrevView: 5,
+                            pagesNextView: 5,
+                            pageChange: function(){}
+                        };
                         options = $.extend(defaults, options);
                         gOptions = options;
+                    } else{
+                        options = gOptions;
                     }
 
                     return this.each(function() {
-                        if( $(this).hasClass('gPages') ) { return; }
+                        if( !update && $(this).hasClass('gPages') ) { return; }
                         obj = $(this);
                         constructor( obj, options );
                     });
-                } else if( options == 'update' ){
-                    debugger
                 } else if( options == 'show_loader' ){
                     showLoader();
                 } else if( options == 'hide_loader' ){
@@ -66,6 +65,7 @@
         obj.addClass('gPages');
         obj.html('');
 
+        console.log('lanza constructor')
         createPaginator( options, function(){
             var $paginator = obj.find('.gPaginator'),
                 totalItems = _selfElem.find(options.item).length,
@@ -229,6 +229,8 @@
 
     /* -------- CREATE LOADER -------- */
     function createLoader(){
+        if( obj.find('.gPages__loader').length > 0 ){ return false; }
+
         $('<div class="gPages__loader"></div>').insertBefore( obj.children().first() );
         var $loader = obj.find('.gPages__loader');
 
@@ -327,6 +329,12 @@
         else{
             return false;
         }
+
+        var $paginator = obj.find('.gPaginator');
+        var pageActive = $paginator.children('.page.active').attr('data-page');
+        pageActive = Number(pageActive);
+
+        $('.gPage').eq( pageActive - 1 ).addClass('active');
     }
 
     /* -------- CONTROLLER PAGES -------- */
