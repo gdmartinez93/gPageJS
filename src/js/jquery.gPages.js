@@ -16,82 +16,49 @@
 
     $.fn.extend({
         gPages: function(options) {
-            // default options
-            var defaults = {
-                item: '',
-                itemsPerPage: 10,
-                classContainerPage: '',
-                prevText: 'back',
-                nextText: 'next',
-                prevSrc: '',
-                nextSrc: '',
-                loader: 'ring',
-                pagesPrevView: 5,
-                pagesNextView: 5,
-                pageChange: function(){}
-            };
-
-            options = $.extend(defaults, options);
-            gOptions = options;
-
             if( options != undefined ){
-                return this.each(function() {
-                    if( $(this).hasClass('gPages') ) { return; }
-                    obj = $(this);
-                    constructor( obj, options );
-                });
-            } else{
-                return false;
-            }
-        },
-        gPageReload: function( options ){
-            var defaults = {
-                item: '',
-                itemsPerPage: 10,
-                classContainerPage: '',
-                prevText: 'back',
-                nextText: 'next',
-                prevSrc: '',
-                nextSrc: '',
-                loader: 'ring',
-                pagesPrevView: 5,
-                pagesNextView: 5,
-                pageChange: function(){}
-            };
+                if( $.isPlainObject(options) || options == 'update' ){
+                    // default options
+                    var defaults = {
+                        item: '',
+                        itemsPerPage: 10,
+                        classContainerPage: '',
+                        prevText: 'back',
+                        nextText: 'next',
+                        prevSrc: '',
+                        nextSrc: '',
+                        loader: 'ring',
+                        pagesPrevView: 5,
+                        pagesNextView: 5,
+                        pageChange: function(){}
+                    };
+                    if( options == 'update' ){
+                        options = gOptions;
+                    } else{
+                        options = $.extend(defaults, options);
+                        gOptions = options;
+                    }
 
-            options = $.extend(defaults, options);
-
-            if( options != undefined ){
-                return this.each(function() {
-                    if( !$(this).hasClass('gPages') ) { return; }
-                    obj = $(this);
-                    destroy(obj, function(){
+                    return this.each(function() {
+                        if( $(this).hasClass('gPages') ) { return; }
+                        obj = $(this);
                         constructor( obj, options );
-                    })
-                });
+                    });
+                } else if( options == 'update' ){
+                    debugger
+                } else if( options == 'show_loader' ){
+                    showLoader();
+                } else if( options == 'hide_loader' ){
+                    hideLoader();
+                } else if( options == 'destroy' ){
+                    destroy(this);
+                }
             } else{
                 return false;
-            }
-        },
-        gPageDestroy: function( callback ){
-            destroy(this, function(){
-                callback();
-            })
-        },
-        gPageLoader: function( action ){
-            if( action != undefined ){
-                switch (action) {
-                    case 'show':
-                        showLoader();
-                        break;
-                    case 'hide':
-                        hideLoader();
-                        break;
-                }
             }
         }
     });
-    
+
     /* -------- CONSTRUCTOR -------- */
     function constructor( obj, options ){
         _selfElem = obj.clone();
@@ -119,7 +86,7 @@
                 obj.find('.gPage')
                     .eq( pageActive - 1 )
                     .addClass('active');
-                
+
                 $paginator
                     .children( '.page' )
                     .removeClass( 'active' )
@@ -144,6 +111,13 @@
                     .first().addClass('active');
 
                 $paginator.find('.page_prev').addClass('disabled');
+            }
+
+            if( $paginator.children( '.page' ).first().hasClass('active') ){
+                $paginator.find('.page_prev').addClass('disabled')
+            }
+            if( $paginator.children( '.page' ).last().hasClass('active') ){
+                $paginator.find('.page_next').addClass('disabled')
             }
 
             $paginator.children(':not(".page")').on('click', function( event ){
@@ -220,7 +194,7 @@
                 prevsRender = 1;
                 nextsRender = options.pagesNextView;
             }
-            
+
             if( i + 1 >= prevsRender && i + 1 <= nextsRender ){
                 classDisabled = '';
             } else{
@@ -413,7 +387,7 @@
                     maxPages = Number( $(this).parent().attr('max-pages') ),
                     currentActivePage = $indicatorActive.index(),
                     classDisabled = '';
-                    
+
                 if( ( currentActivePage - minPages ) >= 1 ){
                     prevsRender = ( currentActivePage ) - minPages;
                 } else{
@@ -441,7 +415,7 @@
         var self = obj,
             originalItems = [],
             totalItems = 0;
-        
+
         $.each(self.find('.gPage'), function( i,val ){
             totalItems += $(this).children().length;
 
@@ -454,12 +428,14 @@
         var controller = setInterval(function(){
             if( originalItems.length == totalItems ){
                 self.html('');
-                
+
                 $.each(originalItems, function( i,val ){
                     self.append( $(this) );
 
                     if( i + 1 && originalItems.length ){
-                        callback();
+                        if( typeof callback == 'function' ){
+                            callback();
+                        }
                     }
                 });
 
