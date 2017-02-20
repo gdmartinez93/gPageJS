@@ -65,7 +65,6 @@
         obj.addClass('gPages');
         obj.html('');
 
-        console.log('lanza constructor')
         createPaginator( options, function(){
             var $paginator = obj.find('.gPaginator'),
                 totalItems = _selfElem.find(options.item).length,
@@ -362,7 +361,9 @@
 
             obj.find('.gPage')
                 .eq( elem.index() -1 )
-                .addClass('active');
+                .addClass('active')
+                .siblings()
+                .removeClass('active');
 
             var $pageActive = obj.find('.gPage.active'),
                 $indicator = obj.find('.gPaginator .page').eq( $pageActive.index() - 1 );
