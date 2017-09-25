@@ -1,4 +1,4 @@
-gPages JS
+gPager JS
 ===================
 
 
